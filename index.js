@@ -171,9 +171,120 @@ http.createServer((request,response)=>{
                 response.writeHead(302, { 'Location': './user_consult.html' });
                 response.end();
             }
+        });
+    }
+    else if(request.url == "/get_all_users_info" && request.method == "POST"){
+        let data = [];
+        request.on('data', value => {
+            data.push(value);
+        }).on('end', ()=>{
+            let params = Buffer.concat(data).toString();
+            const jsonData = {};
+            params.split('&').forEach(item => {
+            const [key, value] = item.split('=');
+            jsonData[key] = value;
+            });
+            /*AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE*/
+            let password = "ispira";
+            console.log(jsonData.pswrd);
+            console.log(jsonData);
+            //tendríamos los resultados de la consulta y los pasaríamos a un Json
+            
+            //datos jiji
+            let userExists = true;
+            /*Aquí procedemos a en caso de que sí existe, a cargar los datos */
+            if(userExists && password == jsonData.pswrd){
+                let ejsFile = './www/ejsFiles/allUsers.ejs';
+                //console.log(ejsFile)
+                ejs.renderFile(ejsFile, {}, (err, renderedHtml) => {
+                    if (err) {
+                    response.statusCode = 500;
+                    response.end('Error interno del servidor');
+                    return;
+                    }
+                    response.statusCode = 200;
+                    response.setHeader('Content-Type', 'text/html');
+                    response.end(renderedHtml);
+                    //estaría bueno en welcome.ejs poner un Script que después de un tiempo de q 5 segundos haga
+                    //un request para volver a cargar main_screen.html
+                });
+            }
+            else{
+                response.writeHead(302, { 'Location': './users_login.html' });
+                response.end();
+            }
+        });
+    }
+    else if(request.url == "/add_days" && request.method == "POST"){
+        //HACEMOS UN INSERET MAMALÓN AL USUARIO ESPECÍFICADO
+        let data = [];
+        request.on('data', value => {
+            data.push(value);
+        }).on('end', ()=>{
+            let params = Buffer.concat(data).toString();
+            const jsonData = {};
+            params.split('&').forEach(item => {
+            const [key, value] = item.split('=');
+            jsonData[key] = value;
+            });
+            
+            //OBTENEMOS LOS DATOS  verificamos que existe el usuario y que seamos admin, luego ya le metemos la fecha
+            let password = "ispira";
+            let userExist = true;
+            
+            if(userExist && jsonData.pswd == password){
+                //hacemos insert a la base de datos
+                console.log("SE INGRESA TODO BN");
+                response.writeHead(302, { 'Location': './payments.html' });
+                response.end();
+            }
+            else{
+                response.writeHead(302, { 'Location': './payments.html' });
+                response.end();
+            }
+        });
+    }
+    else if(request.url == "/sudo" && request.method == "POST"){
+        //tenemos que sacar la contraseña de la base de batos
+        let password = "ispira";
+        let data = [];
+        request.on('data', value => {
+            data.push(value);
+        }).on('end', ()=>{
+            let params = Buffer.concat(data).toString();
+            const jsonData = {};
+            params.split('&').forEach(item => {
+            const [key, value] = item.split('=');
+            jsonData[key] = value;
+            });
+            
+            if(jsonData.pswrd == password){
+                //cargar las opciones donde se mete gente
+                response.writeHead(302, { 'Location': './sudoOptions.html' });
+                response.end();
+            }
+            else{
+                response.writeHead(302, { 'Location': './sudo.html' });
+                response.end();
+            }
+        });
 
-            //console.log(params);
-            //response.write(params);
+    }
+    else if(request.url == "/new_user" && request.method == "POST"){
+        let data = [];
+        request.on('data', value => {
+            data.push(value);
+        }).on('end', ()=>{
+            let params = Buffer.concat(data).toString();
+            const jsonData = {};
+            params.split('&').forEach(item => {
+            const [key, value] = item.split('=');
+            jsonData[key] = value;
+            });
+            
+            console.log(jsonData);
+            response.writeHead(302, { 'Location': './sudoOptions.html' });
+            response.end();
         });
     }
     else if(request.url == "/test"){
