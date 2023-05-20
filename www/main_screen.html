@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html> 
+    <head>
+        <meta charset="utf-8"> 
+        <link rel="stylesheet" href="./css/main_screen.css"/>
+        <link rel="stylesheet" href="./css/global_rules.css"/>
+    </head>
+    <body>
+        <div id="top">
+            <h1>Ispira2</h1>
+        </div>
+        <div id="main_div">
+            <div id="options">
+                <div class="button">
+                    <a href="main_screen.html"><p>Accesos</p></a>
+                </div>
+                <div class="button">
+                    <a href="user_consult.html"><p>Consultas</p></a>
+                </div>
+                <div class="button">
+                    <a href="payments.html"><p>Pagos</p></a>
+                </div>
+                <div class="button">
+                    <a href="users_login.html"><p>Usuarios</p></a>
+                </div>
+                <div class="button">
+                    <a href="main_screen.html"><p>SUDO</p></a>
+                </div>
+            </div>
+            <div id="registVisit">
+                <form action="/user_visit" method="post">
+                    <label for="user_field">Socio: </label>
+                    <input type="text" id="user_field" name="usr" placeholder="####"><br/>
+
+                    <input type="submit" value="Adelante :)">
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

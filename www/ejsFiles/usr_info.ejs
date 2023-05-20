@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html> 
+    <head>
+        <meta charset="utf-8"> 
+        <link rel="stylesheet" href="./css/welcome.css"/>
+        <link rel="stylesheet" href="./css/global_rules.css">
+    </head>
+    <body>
+        <div id="top">
+            <h1>Ispira2</h1>
+        </div>
+        <div id="main_div">
+            <div id="options">
+                <div class="button">
+                    <a href="main_screen.html"><p>Accesos</p></a>
+                </div>
+                <div class="button">
+                    <a href="user_consult.html"><p>Consultas</p></a>
+                </div>
+                <div class="button">
+                    <a href="payments.html"><p>Pagos</p></a>
+                </div>
+                <div class="button">
+                    <a href="users_login.html"><p>Usuarios</p></a>
+                </div>
+                <div class="button">
+                    <a href="main_screen.html"><p>SUDO</p></a>
+                </div>
+            </div>
+            <div id="content">
+                <h1>Usuario: <%= user_id %></h1>
+                <div id="info_div">
+                    <h3>Información del socio: </h3>
+                    <ul>
+                        <li><p>Nombre: <%= username %></p></li>
+                        <li><p>Fecha de nacimiento: <%= birthday %></p></li>
+                        <li><p>Dirección: <%= direction %></p></li>
+                        <li><p>Apodo: <%= aka %></p></li>
+                        <li><p>Foto: <%= photo_source %></p></li> <!--Aquí hay que ver como cargar la fotonga-->
+                    </ul>
+                </div>
+                <div id="history_div">
+                    <h3>Historial del socio: </h3>
+                    <ul>
+                        <li><p>Fecha de ingreso: <%= start_date %></p></li>
+                        <li><p>Visitas totales: <%= total_visits %></p></li>
+                        <li><p>Última visita: <%= last_visit %></p></li>
+                        <li><p>Estatus: <%= status %></p></li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

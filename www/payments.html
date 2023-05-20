@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html> 
+    <head>
+        <meta charset="utf-8"> 
+        <link rel="stylesheet" href="./css/payments.css"/>
+        <link rel="stylesheet" href="./css/global_rules.css">
+    </head>
+    <body>
+        <div id="top">
+            <h1>Ispira2</h1>
+        </div>
+        <div id="main_div">
+            <div id="options">
+                <div class="button">
+                    <a href="main_screen.html"><p>Accesos</p></a>
+                </div>
+                <div class="button">
+                    <a href="user_consult.html"><p>Consultas</p></a>
+                </div>
+                <div class="button">
+                    <a href="payments.html"><p>Pagos</p></a>
+                </div>
+                <div class="button">
+                    <a href="users_login.html"><p>Usuarios</p></a>
+                </div>
+                <div class="button">
+                    <a href="main_screen.html"><p>SUDO</p></a>
+                </div>
+            </div>
+            <div id="payment">
+                <form action="/add_days" method="post">
+                    <label for="user_field">Socio: </label>
+                    <input type="text" id="user_field" name="usr" placeholder="####"/><br/>
+
+                    <label for="new_date"></label>
+                    <input type="date" id="new_date" name="date"/><br/>
+
+                    <label for="admin_password">Confirmar Contraseña: </label>
+                    <input type="password" id="admin_password" value="pswd" placeholder="******"/><br/>
+                    <input type="submit" value="Agregar :)"/>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
