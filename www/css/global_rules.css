@@ -1,0 +1,29 @@
+@import 'colors.css';
+
+body{
+    background-color: var(--negro);
+}
+h1{
+    color: var(--azul);
+}
+
+h2{
+    color: var(--azul);
+}
+h3{
+    color: var(--azul);
+}
+ul{
+    color: var(--azul);
+}
+hr{
+    color: var(--azul);
+    background-color: (--azul);
+}
+p{
+    color: var(--blanco);
+}
+
+label{
+    color: var(--blanco);
+}

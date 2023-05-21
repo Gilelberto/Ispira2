@@ -215,6 +215,38 @@ http.createServer((request,response)=>{
             }
         });
     }
+    else if(request.url == "/delete_user" && request.method == "POST"){
+        let data = [];
+        request.on('data', value => {
+            data.push(value);
+        }).on('end', ()=>{
+            let params = Buffer.concat(data).toString();
+            const jsonData = {};
+            params.split('&').forEach(item => {
+            const [key, value] = item.split('=');
+            jsonData[key] = value;
+            });
+            /*AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE*/
+            let user = jsonData.usr;
+            console.log(jsonData);
+            //tendríamos los resultados de la consulta y los pasaríamos a un Json
+            
+            //datos jiji
+            let userExists = true;
+            /*Aquí procedemos a en caso de que sí existe, a borrar al mamaguevo */
+            if(userExists && jsonData.confirmation == "confirmar"){
+                //BORRAMOS ÉPICAMENTE
+                console.log("Borraoh");
+                response.writeHead(302, { 'Location': './sudoOptions.html' });
+                response.end();
+            }
+            else{
+                response.writeHead(302, { 'Location': './delUser.html' });
+                console.log("NOSTABA");
+                response.end();
+            }
+        });
+    }
     else if(request.url == "/add_days" && request.method == "POST"){
         //HACEMOS UN INSERET MAMALÓN AL USUARIO ESPECÍFICADO
         let data = [];
