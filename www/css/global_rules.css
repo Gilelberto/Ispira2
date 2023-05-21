@@ -27,3 +27,21 @@ p{
 label{
     color: var(--blanco);
 }
+
+body{
+    text-align: center;
+}
+
+#options{
+    display: inline-flex;
+    flex-direction: row;
+    text-align: center;
+    border-top: 2px var(--azul) solid;
+    border-bottom: 2px var(--azul) solid;
+    margin-bottom: 2.5vw;
+}
+
+.button{
+    padding-left: 5vw;
+    padding-right: 5vw;
+}
