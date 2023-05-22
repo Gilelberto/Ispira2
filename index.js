@@ -149,38 +149,37 @@ http.createServer((request,response)=>{
             jsonData[key] = value;
             });
             /*AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE*/
-            let user = jsonData.usr;
-
-            //tendríamos los resultados de la consulta y los pasaríamos a un Json
-            let userInfo = { "user_id":user, "username": "Gil", "birthday": "07/11/2002", "direction":"UACH CAMPUS II",
-            "aka":"Campanita666", "photo_source":"./recursos/algo así", "start_date":"15/09/2018","total_visits":"666"
-            , "last_visit":"20/05/2023","status":"active" };
-            let userName = "Gil";
-            console.log(jsonData);
-            let userExists = true;
-            /*Aquí procedemos a en caso de que sí existe, a cargar los datos */
-
-            
-            if(userExists){
-                let ejsFile = './www/ejsFiles/usr_info.ejs';
-                //console.log(ejsFile)
-                ejs.renderFile(ejsFile, userInfo, (err, renderedHtml) => {
-                    if (err) {
-                    response.statusCode = 500;
-                    response.end('Error interno del servidor');
-                    return;
-                    }
-                    response.statusCode = 200;
-                    response.setHeader('Content-Type', 'text/html');
-                    response.end(renderedHtml);
-                    //estaría bueno en welcome.ejs poner un Script que después de un tiempo de q 5 segundos haga
-                    //un request para volver a cargar main_screen.html
-                });
-            }
-            else{
+            let dbInfo = db.consult('select ').then(dbInfo  => {
+                let user = jsonData.usr;
+                //tendríamos los resultados de la consulta y los pasaríamos a un Json
+                let userInfo = { "user_id":user, "username": "Gil", "birthday": "07/11/2002", "direction":"UACH CAMPUS II","status":"active" };
+                let userExists = true;
+                /*Aquí procedemos a en caso de que sí existe, a cargar los datos */                
+                if(userExists){
+                    let ejsFile = './www/ejsFiles/usr_info.ejs';
+                    //console.log(ejsFile)
+                    ejs.renderFile(ejsFile, userInfo, (err, renderedHtml) => {
+                        if (err) {
+                        response.statusCode = 500;
+                        response.end('Error interno del servidor');
+                        return;
+                        }
+                        response.statusCode = 200;
+                        response.setHeader('Content-Type', 'text/html');
+                        response.end(renderedHtml);
+                        //estaría bueno en welcome.ejs poner un Script que después de un tiempo de q 5 segundos haga
+                        //un request para volver a cargar main_screen.html
+                    });
+                }
+                else{
+                    response.writeHead(302, { 'Location': './user_consult.html' });
+                    response.end();
+                }
+            }).catch(err => {
+                console.error(err);
                 response.writeHead(302, { 'Location': './user_consult.html' });
                 response.end();
-            }
+            });
         });
     }
     else if(request.url == "/get_all_users_info" && request.method == "POST"){
