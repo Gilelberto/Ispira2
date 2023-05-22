@@ -4,6 +4,7 @@ const ejs = require('ejs');
 const dbDriver = require('./conection');
 const { error } = require('console');
 let db = new dbDriver();
+var admin_pass;
 //http => (request,response)
 function chargePage(file,request,response){
     fs.readFile(file,(error,data)=>{
@@ -74,7 +75,8 @@ http.createServer((request,response)=>{
                     conti = true;
                 }
                 if(user == jsonData.admin_usr && password == jsonData.pswrd && conti == true){
-                    
+
+                    admin_pass = password;
                     response.writeHead(302, { 'Location': './main_screen.html' });
                     response.end();
                 }
@@ -189,30 +191,32 @@ http.createServer((request,response)=>{
             params.split('&').forEach(item => {
             const [key, value] = item.split('=');
             jsonData[key] = value;
-            });
-            /*AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE*/
-            let password = "ispira";
-            console.log(jsonData.pswrd);
-            console.log(jsonData);
-            //tendríamos los resultados de la consulta y los pasaríamos a un Json
+            }); 
             
-            //datos jiji
-            let userExists = true;
-            /*Aquí procedemos a en caso de que sí existe, a cargar los datos */
-            if(userExists && password == jsonData.pswrd){
+            if(admin_pass == jsonData.pswrd){
                 let ejsFile = './www/ejsFiles/allUsers.ejs';
-                //console.log(ejsFile)
-                ejs.renderFile(ejsFile, {}, (err, renderedHtml) => {
-                    if (err) {
-                    response.statusCode = 500;
-                    response.end('Error interno del servidor');
-                    return;
+                db.consult('select * from usuario').then(dbInfo =>{
+                    //CARGAR LA INFO DE LA CONSULTA Y RENDERIZAR
+                    let formatedInfo = [];
+                    for(let i = 0; i < dbInfo.length ; i++){
+                        let register = dbInfo[i].toString();
+                        formatedInfo.push(register);
                     }
-                    response.statusCode = 200;
-                    response.setHeader('Content-Type', 'text/html');
-                    response.end(renderedHtml);
-                    //estaría bueno en welcome.ejs poner un Script que después de un tiempo de q 5 segundos haga
-                    //un request para volver a cargar main_screen.html
+                    ejs.renderFile(ejsFile, {"info":formatedInfo}, (err, renderedHtml) => {
+                        if (err) {
+                        response.statusCode = 500;
+                        response.end('Error interno del servidor');
+                        return;
+                        }
+                        response.statusCode = 200;
+                        response.setHeader('Content-Type', 'text/html');
+                        response.end(renderedHtml);
+                    });
+                }).catch(err => {
+                    console.error(err);
+                    response.writeHead({"Content-Type":"text/plain"});
+                    response.write("Error en la consulta");
+                    response.end()
                 });
             }
             else{
