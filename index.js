@@ -3,8 +3,12 @@ const fs = require('fs');
 const ejs = require('ejs');
 const dbDriver = require('./conection');
 const { error } = require('console');
+const hash = require('./hash');
+var genID = new hash();
 let db = new dbDriver();
 var admin_pass;
+var sucursal;
+
 //http => (request,response)
 function chargePage(file,request,response){
     fs.readFile(file,(error,data)=>{
@@ -44,7 +48,6 @@ http.createServer((request,response)=>{
     
     //console.log(request.url);
     if(request.url == "/admin_login" && request.method == "POST"){ 
-        console.log("ENTRA");
         let data = [];
         request.on('data', value => {
             data.push(value);
@@ -68,11 +71,13 @@ http.createServer((request,response)=>{
                     user = dbInfo[0].ADMIN_ID;
                     password = dbInfo[0].CONTRASEÑA;
                     conti = true;
+                    sucursal = '1';
                 }
                 else if(jsonData.sucursal == '02'){
                     user = dbInfo[1].ADMIN_ID;
                     password = dbInfo[1].CONTRASEÑA;
                     conti = true;
+                    sucursal = '2';
                 }
                 if(user == jsonData.admin_usr && password == jsonData.pswrd && conti == true){
 
@@ -106,7 +111,16 @@ http.createServer((request,response)=>{
             jsonData[key] = value;
             });
             db.consult(`select * from persona p join usuario u on (p.persona_id = u.usuario_id) join fechas f using(usuario_id) where usuario_id = ${jsonData.usr}`).then(dbInfo  => {
-                let userExists = true;    //ESTO ESTÁ DEMÁS ES BASICAMENTE CÓDIGO BASURA QUE NO SE QUITA PARA NO PERDER TIEMPO PERO EL IF NO ES NECESARIO
+                let userExists = true;    //ESTO ESTÁ DEMÁS ES BASICAMENTE CÓDIGO BASURA QUE NO SE QUITA PARA NO PERDER TIEMPO PERO EL IF NO ES NECESARIO              
+                //INSERTAMOS LA VISITA
+                //id , usuario_id, fecha_visita_sucursal_id
+                //VALUES (:1, :2, :3, :4)
+                let cons = `INSERT INTO Visitas VALUES (:1, :2, :3, :4)`;
+                let dt = new Date();
+                let id = genID.getNumericHashFromDate(dt);
+                let vals = [id,jsonData.usr,dt,sucursal];
+                db.insert(cons,vals);
+
                 if(userExists){
                     let ejsFile = './www/ejsFiles/welcome.ejs';
                     ejs.renderFile(ejsFile, { "username" : dbInfo[0].NOMBRE , "days": dbInfo[0].FECHA_CORTE }, (err, renderedHtml) => {
@@ -121,6 +135,7 @@ http.createServer((request,response)=>{
                         //estaría bueno en welcome.ejs poner un Script que después de un tiempo de q 5 segundos haga
                         //un request para volver a cargar main_screen.html
                     });
+
                 }
                 else{
                     response.writeHead(302, { 'Location': './main_screen.html' });
