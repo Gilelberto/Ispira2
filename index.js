@@ -1,7 +1,9 @@
 const http = require('http');
 const fs = require('fs');
 const ejs = require('ejs');
-
+const dbDriver = require('./conection');
+const { error } = require('console');
+let db = new dbDriver();
 //http => (request,response)
 function chargePage(file,request,response){
     fs.readFile(file,(error,data)=>{
@@ -38,6 +40,7 @@ function chargePage(file,request,response){
 }
 http.createServer((request,response)=>{
     const file = request.url == '/' ? './www/index.html' : `./WWW${request.url}`;
+    
     //console.log(request.url);
     if(request.url == "/admin_login" && request.method == "POST"){ 
         console.log("ENTRA");
@@ -58,21 +61,37 @@ http.createServer((request,response)=>{
             console.log(jsonData.admin_usr);
             /*AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO SEA ADMIN MIENTRAS LO 
             VOY A HARDCODEAR PARA SIMULAR LA FUNCIÓN*/
-            let user = "admin";
-            let password = "ispira";
-            /*Aquí procedemos a en caso de que sí sea cargar el main_screen.html si no cargamos la misma index */
+            db.consult('select * from administrador').then(dbInfo =>{
+                //console.log(dbInfo);
+                let conti = false;
+                let user;
+                let password;
+                if(jsonData.sucursal == '01'){
+                    user = dbInfo[0].PERSONA_ID;
+                    password = dbInfo[0].CONTRASEÑA;
+                    conti = true;
+                }
+                else if(jsonData.sucursal == '02'){
+                    user = dbInfo[1].PERSONA_ID;
+                    password = dbInfo[1].CONTRASEÑA;
+                    conti = true;
+                }
+                
+                if(user == jsonData.admin_usr && password == jsonData.pswrd && conti == true){
+                    response.writeHead(302, { 'Location': './main_screen.html' });
+                    response.end();
+                }
+                else{
+                    response.writeHead(302, { 'Location': './index.html' });
+                    response.end();
+                }
+            }).catch(err => {
+                console.error(err);
+                response.writeHead({"Content-Type":"text/plain"});
+                response.write("Error en la consulta");
+                response.end()
+            });
             
-            if(user == jsonData.admin_usr && password == jsonData.pswrd){
-                response.writeHead(302, { 'Location': './main_screen.html' });
-                response.end();
-            }
-            else{
-                response.writeHead(302, { 'Location': './index.html' });
-                response.end();
-            }
-
-            //console.log(params);
-            //response.write(params);
         });
     }
     else if(request.url == "/user_visit" && request.method == "POST"){
@@ -81,47 +100,38 @@ http.createServer((request,response)=>{
         request.on('data', value => {
             data.push(value);
         }).on('end', ()=>{
-            //console.log(data);
             let params = Buffer.concat(data).toString();
-            //console.log(params);
-
             const jsonData = {};
             params.split('&').forEach(item => {
             const [key, value] = item.split('=');
             jsonData[key] = value;
             });
-
-            console.log(jsonData.admin_usr);
-            /*AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE*/
-            let user = jsonData.usr;
-            let userName = "Gil";
-            console.log(jsonData);
-            let userExists = true;
-            /*Aquí procedemos a en caso de que sí existe, a cargar la página de bienvenido */
-            
-            if(userExists){
-                let ejsFile = './www/ejsFiles/welcome.ejs';
-                //console.log(ejsFile)
-                ejs.renderFile(ejsFile, { "username" : userName , "days": 1234 }, (err, renderedHtml) => {
-                    if (err) {
-                    response.statusCode = 500;
-                    response.end('Error interno del servidor');
-                    return;
-                    }
-                    response.statusCode = 200;
-                    response.setHeader('Content-Type', 'text/html');
-                    response.end(renderedHtml);
-                    //estaría bueno en welcome.ejs poner un Script que después de un tiempo de q 5 segundos haga
-                    //un request para volver a cargar main_screen.html
-                });
-            }
-            else{
+            db.consult(`select * from usuario join persona using (persona_id) where persona_id = ${jsonData.usr}`).then(dbInfo  => {
+                let userExists = true;    //ESTO ESTÁ DEMÁS ES BASICAMENTE CÓDIGO BASURA QUE NO SE QUITA PARA NO PERDER TIEMPO PERO EL IF NO ES NECESARIO
+                if(userExists){
+                    let ejsFile = './www/ejsFiles/welcome.ejs';
+                    ejs.renderFile(ejsFile, { "username" : dbInfo[0].NOMBRE , "days": dbInfo[0].FECHA_DE_CORTE }, (err, renderedHtml) => {
+                        if (err) {
+                        response.statusCode = 500;
+                        response.end('Error interno del servidor');
+                        return;
+                        }
+                        response.statusCode = 200;
+                        response.setHeader('Content-Type', 'text/html');
+                        response.end(renderedHtml);
+                        //estaría bueno en welcome.ejs poner un Script que después de un tiempo de q 5 segundos haga
+                        //un request para volver a cargar main_screen.html
+                    });
+                }
+                else{
+                    response.writeHead(302, { 'Location': './main_screen.html' });
+                    response.end();
+                }
+            }).catch(err => {
+                console.error(err);
                 response.writeHead(302, { 'Location': './main_screen.html' });
                 response.end();
-            }
-
-            //console.log(params);
-            //response.write(params);
+            });
         });
     }
     else if(request.url == "/get_user_info" && request.method == "POST"){
@@ -259,6 +269,8 @@ http.createServer((request,response)=>{
             const [key, value] = item.split('=');
             jsonData[key] = value;
             });
+
+            console.log(jsonData);
             
             //OBTENEMOS LOS DATOS  verificamos que existe el usuario y que seamos admin, luego ya le metemos la fecha
             let password = "ispira";

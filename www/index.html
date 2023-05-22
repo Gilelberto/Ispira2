@@ -12,7 +12,13 @@
         <div id="main_div">
             <div id="login_form">
                 <form action="/admin_login" method="post">
-                    <label for="user_field">Usuario: </label>
+                    <label for="suc">Sucursal: </label>
+                    <select name="sucursal" id="suc">
+                        <option value="01">Parral</option>
+                        <option value="02">Juárez</option>
+                    </select><br/>
+
+                    <label for="user_field">Usuario ID: </label>
                     <input type="text" id="user_field" name="admin_usr" placeholder="Fulanito123"><br/>
 
                     <label for="password_field">Contraseña: </label>

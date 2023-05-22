@@ -17,8 +17,7 @@ ul{
     color: var(--azul);
 }
 hr{
-    color: var(--azul);
-    background-color: (--azul);
+    border-color: var(--azul);
 }
 p{
     color: var(--blanco);
