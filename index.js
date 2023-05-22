@@ -57,27 +57,24 @@ http.createServer((request,response)=>{
             const [key, value] = item.split('=');
             jsonData[key] = value;
             });
-
-            console.log(jsonData.admin_usr);
             /*AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO SEA ADMIN MIENTRAS LO 
             VOY A HARDCODEAR PARA SIMULAR LA FUNCIÓN*/
             db.consult('select * from administrador').then(dbInfo =>{
-                //console.log(dbInfo);
                 let conti = false;
                 let user;
                 let password;
                 if(jsonData.sucursal == '01'){
-                    user = dbInfo[0].PERSONA_ID;
+                    user = dbInfo[0].ADMIN_ID;
                     password = dbInfo[0].CONTRASEÑA;
                     conti = true;
                 }
                 else if(jsonData.sucursal == '02'){
-                    user = dbInfo[1].PERSONA_ID;
+                    user = dbInfo[1].ADMIN_ID;
                     password = dbInfo[1].CONTRASEÑA;
                     conti = true;
                 }
-                
                 if(user == jsonData.admin_usr && password == jsonData.pswrd && conti == true){
+                    
                     response.writeHead(302, { 'Location': './main_screen.html' });
                     response.end();
                 }
@@ -106,11 +103,11 @@ http.createServer((request,response)=>{
             const [key, value] = item.split('=');
             jsonData[key] = value;
             });
-            db.consult(`select * from usuario join persona using (persona_id) where persona_id = ${jsonData.usr}`).then(dbInfo  => {
+            db.consult(`select * from persona p join usuario u on (p.persona_id = u.usuario_id) join fechas f using(usuario_id) where usuario_id = ${jsonData.usr}`).then(dbInfo  => {
                 let userExists = true;    //ESTO ESTÁ DEMÁS ES BASICAMENTE CÓDIGO BASURA QUE NO SE QUITA PARA NO PERDER TIEMPO PERO EL IF NO ES NECESARIO
                 if(userExists){
                     let ejsFile = './www/ejsFiles/welcome.ejs';
-                    ejs.renderFile(ejsFile, { "username" : dbInfo[0].NOMBRE , "days": dbInfo[0].FECHA_DE_CORTE }, (err, renderedHtml) => {
+                    ejs.renderFile(ejsFile, { "username" : dbInfo[0].NOMBRE , "days": dbInfo[0].FECHA_CORTE }, (err, renderedHtml) => {
                         if (err) {
                         response.statusCode = 500;
                         response.end('Error interno del servidor');
@@ -149,10 +146,10 @@ http.createServer((request,response)=>{
             jsonData[key] = value;
             });
             /*AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE*/
-            let dbInfo = db.consult('select ').then(dbInfo  => {
-                let user = jsonData.usr;
+            db.consult(`select * from persona p join usuario u on (p.persona_id = u.usuario_id) join fechas f using(usuario_id) join rutina r using(rutina_id) join tipo_suscripcion t using(suscripcion_id)
+            where usuario_id = ${jsonData.usr}`).then(dbInfo  => {
                 //tendríamos los resultados de la consulta y los pasaríamos a un Json
-                let userInfo = { "user_id":user, "username": "Gil", "birthday": "07/11/2002", "direction":"UACH CAMPUS II","status":"active" };
+                let userInfo = { "user_id":jsonData.user, "username": dbInfo[0].NOMBRE, "birthday": dbInfo[0].CUMPLEAÑOS, "direction":dbInfo[0].DIRECCION,"status":"active" };
                 let userExists = true;
                 /*Aquí procedemos a en caso de que sí existe, a cargar los datos */                
                 if(userExists){
