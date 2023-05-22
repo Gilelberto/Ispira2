@@ -195,13 +195,15 @@ http.createServer((request,response)=>{
             
             if(admin_pass == jsonData.pswrd){
                 let ejsFile = './www/ejsFiles/allUsers.ejs';
-                db.consult('select * from usuario').then(dbInfo =>{
+                db.consult(`select * from persona p join usuario u on (p.persona_id = u.usuario_id) join fechas f using(usuario_id) join rutina r using(rutina_id) join tipo_suscripcion t using(suscripcion_id)`).then(dbInfo =>{
                     //CARGAR LA INFO DE LA CONSULTA Y RENDERIZAR
                     let formatedInfo = [];
                     for(let i = 0; i < dbInfo.length ; i++){
-                        let register = dbInfo[i].toString();
-                        formatedInfo.push(register);
+                        let register = JSON.stringify(dbInfo[i]);
+                        //console.log(dbInfo[i]);
+                        formatedInfo.push("<p>"+register+"<p/>");
                     }
+                    formatedInfo = formatedInfo.join("<hr/>");
                     ejs.renderFile(ejsFile, {"info":formatedInfo}, (err, renderedHtml) => {
                         if (err) {
                         response.statusCode = 500;
