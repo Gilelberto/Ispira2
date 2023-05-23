@@ -4,6 +4,7 @@ const ejs = require('ejs');
 const dbDriver = require('./conection');
 const { error } = require('console');
 const hash = require('./hash');
+const { type } = require('os');
 var genID = new hash();
 let db = new dbDriver();
 var admin_pass;
@@ -123,7 +124,15 @@ http.createServer((request,response)=>{
 
                 if(userExists){
                     let ejsFile = './www/ejsFiles/welcome.ejs';
-                    ejs.renderFile(ejsFile, { "username" : dbInfo[0].NOMBRE , "days": dbInfo[0].FECHA_CORTE }, (err, renderedHtml) => {
+                    let dt = new Date();
+                    let st;
+                    if(dt < dbInfo[0].FECHA_CORTE){ //GRACIAS ANAHÍ TQM SIN TI NO SALÍA ÉSTE BUG
+                        st = 'Activo';
+                    }
+                    else{
+                        st = 'Vencido';
+                    }
+                    ejs.renderFile(ejsFile, { "username" : dbInfo[0].NOMBRE , "days": dbInfo[0].FECHA_CORTE, "status":st }, (err, renderedHtml) => {
                         if (err) {
                         response.statusCode = 500;
                         response.end('Error interno del servidor');
@@ -285,19 +294,37 @@ http.createServer((request,response)=>{
             params.split('&').forEach(item => {
             const [key, value] = item.split('=');
             jsonData[key] = value;
-            });
+            });     
+            if(jsonData.pswd == admin_pass){
+                db.consult(`select * from usuario u join fechas f using(usuario_id) join tipo_suscripcion using (suscripcion_id) where usuario_id = ${jsonData.usr}`).then(dbInfo  => {
+                    
+                    let dt = new Date();
 
-            console.log(jsonData);
-            
-            //OBTENEMOS LOS DATOS  verificamos que existe el usuario y que seamos admin, luego ya le metemos la fecha
-            let password = "ispira";
-            let userExist = true;
-            
-            if(userExist && jsonData.pswd == password){
-                //hacemos insert a la base de datos
-                console.log("SE INGRESA TODO BN");
-                response.writeHead(302, { 'Location': './payments.html' });
-                response.end();
+                    //ALTER FECHAS EN FECHAS
+                    console.log("====================");
+                    console.log(dbInfo);
+                    console.log("====================");
+                    let payment = dt;
+                    dt.setMonth(dt.getMonth() + dbInfo[0].CANTIDAD); 
+                    let paymentInsert = `update fechas set fecha_pago=:payment,fecha_corte=:newPayment
+                    where usuario_id= ${jsonData.usr_id}`;
+                    let paymentValues = {"payment":payment,"newPayment":dt};
+                    db.insert(paymentInsert,paymentValues);
+
+                    console.log("USUARIO");
+                    //ALTER EN USUARIO
+                    let userCons = `update usuario set suscripcion_id= :sus where usuario_id= ${jsonData.usr_id}`;
+                    let userValue = {"sus":jsonData.SUS};
+                    db.insert(userCons,userValue);
+                    response.writeHead(302, { 'Location': './payments.html' });
+                    response.end();
+
+                    
+                }).catch(err => {
+                    console.error(err);
+                    response.writeHead(302, { 'Location': './payments.html' });
+                    response.end();
+                });
             }
             else{
                 response.writeHead(302, { 'Location': './payments.html' });
@@ -343,25 +370,20 @@ http.createServer((request,response)=>{
             jsonData[key] = value;
             });
             
+            //tratamos los datos y luego ya insertamos
+           
+            /*
+            let cons = `INSERT INTO Visitas VALUES (:1, :2, :3, :4)`;
+            let dt = new Date();
+            let id = genID.getNumericHashFromDate(dt);
+            let vals = [id,jsonData.usr,dt,sucursal];
+
+            db.insert(cons,vals);*/
+
             console.log(jsonData);
             response.writeHead(302, { 'Location': './sudoOptions.html' });
             response.end();
         });
-    }
-    else if(request.url == "/test"){
-        let ejsFile = './www/ejsFiles/test.ejs';
-        console.log(ejsFile)
-        let nombre = "Campanita"
-        ejs.renderFile(ejsFile, { "username" : nombre }, (err, renderedHtml) => {
-            if (err) {
-              response.statusCode = 500;
-              response.end('Error interno del servidor');
-              return;
-            }
-            response.statusCode = 200;
-            response.setHeader('Content-Type', 'text/html');
-            response.end(renderedHtml);
-          });
     }
     else if(request.url == '/save' && request.method == "POST"){
         //console.log("ENTRA");

@@ -25,7 +25,7 @@ class DBManager{
         }
     }
     
-    async insert(cons, bindParams) {
+    async insert(cons, bindParams) { //TAMBIEN BORRA Y ALTERA
         let con;
         try {
             con = await oracledb.getConnection({
