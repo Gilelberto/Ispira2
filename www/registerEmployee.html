@@ -10,7 +10,7 @@
             <img id="logo" src="./resources/img/logo.png" alt="logo">
         </div>
         <div id="main_div">
-            <h2>Formulario de registro para nuevos usuarios</h2>
+            <h2>Formulario de registro para nuevos empleados</h2>
             <div id="options">
                 <div class="button">
                     <a href="main_screen.html"><p>Accesos</p></a>
@@ -30,7 +30,7 @@
             </div>
             <hr/>
             <div id="register_div">
-               <form action="/new_user" method="post">
+               <form action="/new_employee" method="post">
                     <label for="name_field"><p>Nombre: </p> </label>
                     <input type="text" id="name_field" name="name" placeholder="Fulanito Pérez Mangano" required/><br/>
 
@@ -40,13 +40,13 @@
                     <label for="address"><p>Dirección: </p></label>
                     <input type="text" id="address" name="address" required/><br/>
 
-                    <label for="suscription"><p>Tipo suscripción: </p></label>
-                    <select name="suscription" id="suscription" required>
-                        <option value="1">Mensual</option>
-                        <option value="2">Trimestral</option>
-                        <option value="3">Anual</option>
+                    <label for="salary"><p>Sueldo </p></label>
+                    <input type="number" id="salary" name="salary" placeholder="1000"required/><br/>
 
-                    </select><br/><br/>
+
+                    
+
+
 
                     <label for="rutina"><p>Tipo de rutina: </p></label>
                     <select name="routine" id="routine" required>
