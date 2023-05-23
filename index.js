@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const ejs = require('ejs');
 const dbDriver = require('./conection');
-const { error } = require('console');
+const { error, Console } = require('console');
 const hash = require('./hash');
 const { type } = require('os');
 var genID = new hash();
@@ -67,21 +67,23 @@ http.createServer((request,response)=>{
             db.consult('select * from administrador').then(dbInfo =>{
                 let conti = false;
                 let user;
-                let password;
+                var password;
+                console.log(dbInfo[0].CLAVE);
                 if(jsonData.sucursal == '01'){
                     user = dbInfo[0].ADMIN_ID;
-                    password = dbInfo[0].CONTRASEÑA;
+                    password = dbInfo[0].CLAVE;
+                    console.log("CONTRASEÑA: ",dbInfo[0].CLAVE);
                     conti = true;
                     sucursal = '1';
                 }
                 else if(jsonData.sucursal == '02'){
                     user = dbInfo[1].ADMIN_ID;
-                    password = dbInfo[1].CONTRASEÑA;
+                    password = dbInfo[1].CLAVE;
                     conti = true;
                     sucursal = '2';
                 }
                 if(user == jsonData.admin_usr && password == jsonData.pswrd && conti == true){
-
+                    console.log("ENTRA");
                     admin_pass = password;
                     response.writeHead(302, { 'Location': './main_screen.html' });
                     response.end();
@@ -175,7 +177,7 @@ http.createServer((request,response)=>{
             db.consult(`select * from persona p join usuario u on (p.persona_id = u.usuario_id) join fechas f using(usuario_id) join rutina r using(rutina_id) join tipo_suscripcion t using(suscripcion_id)
             where usuario_id = ${jsonData.usr}`).then(dbInfo  => {
                 //tendríamos los resultados de la consulta y los pasaríamos a un Json
-                let userInfo = { "user_id":jsonData.user, "username": dbInfo[0].NOMBRE, "birthday": dbInfo[0].CUMPLEAÑOS, "direction":dbInfo[0].DIRECCION,"status":"active" };
+                let userInfo = { "user_id":jsonData.user, "username": dbInfo[0].NOMBRE, "birthday": dbInfo[0].CUMPLE, "direction":dbInfo[0].DIRECCION,"status":"active" };
                 let userExists = true;
                 /*Aquí procedemos a en caso de que sí existe, a cargar los datos */                
                 if(userExists){
@@ -370,17 +372,50 @@ http.createServer((request,response)=>{
             jsonData[key] = value;
             });
             
-            //tratamos los datos y luego ya insertamos
-           
-            /*
-            let cons = `INSERT INTO Visitas VALUES (:1, :2, :3, :4)`;
             let dt = new Date();
+            let dtPayment = new Date();
+            dtPayment.setMonth(dtPayment.getMonth() + 3);
             let id = genID.getNumericHashFromDate(dt);
-            let vals = [id,jsonData.usr,dt,sucursal];
 
-            db.insert(cons,vals);*/
 
-            console.log(jsonData);
+            let consPer = `INSERT INTO Persona VALUES (:id, :name, TO_DATE(:birthday, 'YYYY-MM-DD'), :address, 'Activo')`;
+            let bindParams = {
+                "id": id,
+                "name": jsonData.name,
+                "birthday": jsonData.birthday,
+                "address": jsonData.address
+            };
+            db.insert(consPer,bindParams).then(result => {
+                //USUARIO
+                //ID,SUSCRIPCION,ENTRENADOR ID, RUTINA ID
+                let consUser = `INSERT INTO USUARIO VALUES (:id, :suscription, :coach, :routine)`;
+                let valsUser = {
+                    "id": id,
+                    "suscription": jsonData.suscription,
+                    "coach": jsonData.coach,
+                    "routine": jsonData.routine
+                };
+                db.insert(consUser,valsUser).then(resu => {
+                    let year = dt.getFullYear();
+                    let month = String(dt.getMonth() + 1).padStart(2, "0"); // Agrega ceros a la izquierda si es necesario
+                    let day = String(dt.getDate()).padStart(2, "0"); // Agrega ceros a la izquierda si es necesario
+                    const formattedDatePayment = `${year}-${month}-${day}`;
+
+                    year = dtPayment.getFullYear();
+                    month = String(dtPayment.getMonth() + 1).padStart(2, "0"); // Agrega ceros a la izquierda si es necesario
+                    day = String(dtPayment.getDate()).padStart(2, "0"); // Agrega ceros a la izquierda si es necesario
+                    const formattedDateNext = `${year}-${month}-${day}`;
+
+                    let consFechas = `INSERT INTO FECHAS VALUES (:id, TO_DATE(:pago, 'YYYY-MM-DD'), TO_DATE(:corte, 'YYYY-MM-DD'))`;
+                    let valsFechas = {
+                        "id":id,
+                        "pago":formattedDatePayment,
+                        "corte":formattedDateNext
+                    };
+                    db.insert(consFechas,valsFechas);
+                }).catch(error => {console.log(error)});
+            }).catch(error => {console.log(error);});
+            
             response.writeHead(302, { 'Location': './sudoOptions.html' });
             response.end();
         });

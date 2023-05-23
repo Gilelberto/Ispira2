@@ -43,7 +43,10 @@ class DBManager{
             console.log("Inserción exitosa");
             return result;
         } catch (err) {
+            console.log("*********************************");
+            console.log(cons);
             console.error(err);
+            console.log("*********************************");
         }
     }
 
@@ -55,13 +58,13 @@ class DBManager{
             password: "ispira",
             connectString: "localhost:1521/xepdb1"
           });
-          console.log("UPDATE FUNCTION");
-          console.log(cons);
+          console.log("UPDATE FUNCTION: ",cons);
           const result = await con.execute(
             cons,
             { autoCommit: true } // Configura el autoCommit en true para realizar la actualización
           );
           console.log("Actualización exitosa");
+          return result;
         } catch (err) {
           console.error(err);
         }

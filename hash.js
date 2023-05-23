@@ -9,7 +9,7 @@ class H{
         const hash = CryptoJS.MD5(formattedDate).toString();
       
         // Obtener los primeros 9 dígitos del hash
-        const numericHash = parseInt(hash.substr(0, 9), 16);
+        const numericHash = parseInt(hash.substr(0, 5), 16);
       
         return numericHash;
       }
