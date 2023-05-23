@@ -46,6 +46,26 @@ class DBManager{
             console.error(err);
         }
     }
+
+    async update(cons) { //TAMBIÉN BORRA Y ALTERA
+        let con;
+        try {
+          con = await oracledb.getConnection({
+            user: "ISPIRA",
+            password: "ispira",
+            connectString: "localhost:1521/xepdb1"
+          });
+          console.log("UPDATE FUNCTION");
+          console.log(cons);
+          const result = await con.execute(
+            cons,
+            { autoCommit: true } // Configura el autoCommit en true para realizar la actualización
+          );
+          console.log("Actualización exitosa");
+        } catch (err) {
+          console.error(err);
+        }
+      }
 }
 
     

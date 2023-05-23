@@ -296,26 +296,26 @@ http.createServer((request,response)=>{
             jsonData[key] = value;
             });     
             if(jsonData.pswd == admin_pass){
-                db.consult(`select * from usuario u join fechas f using(usuario_id) join tipo_suscripcion using (suscripcion_id) where usuario_id = ${jsonData.usr}`).then(dbInfo  => {
+                db.consult(`select * from usuario u join fechas f using(usuario_id) join tipo_suscripcion using (suscripcion_id) where usuario_id = ${jsonData.usr_id}`).then(dbInfo  => {
                     
-                    let dt = new Date();
+                    let dtOld = new Date();
+                    let dt = new Date()
 
                     //ALTER FECHAS EN FECHAS
-                    console.log("====================");
+                    /*console.log("====================");
                     console.log(dbInfo);
-                    console.log("====================");
-                    let payment = dt;
+                    console.log("====================");*/
+                    let payment = dtOld;
                     dt.setMonth(dt.getMonth() + dbInfo[0].CANTIDAD); 
                     let paymentInsert = `update fechas set fecha_pago=:payment,fecha_corte=:newPayment
                     where usuario_id= ${jsonData.usr_id}`;
                     let paymentValues = {"payment":payment,"newPayment":dt};
                     db.insert(paymentInsert,paymentValues);
-
-                    console.log("USUARIO");
                     //ALTER EN USUARIO
-                    let userCons = `update usuario set suscripcion_id= :sus where usuario_id= ${jsonData.usr_id}`;
-                    let userValue = {"sus":jsonData.SUS};
+                    let userCons = `update usuario set suscripcion_id = :newSus where usuario_id = ${jsonData.usr_id}`;
+                    let userValue = {"newSus":jsonData.sus};
                     db.insert(userCons,userValue);
+
                     response.writeHead(302, { 'Location': './payments.html' });
                     response.end();
 
