@@ -178,7 +178,6 @@ http.createServer((request,response)=>{
             const [key, value] = item.split('=');
             jsonData[key] = value;
             });
-            /AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE/
             db.consult(`select * from persona p join usuario u on (p.persona_id = u.usuario_id) join fechas f using(usuario_id) join rutina r using(rutina_id) join tipo_suscripcion t using(suscripcion_id)
             where usuario_id = ${jsonData.usr}`).then(dbInfo  => {
                 //tendríamos los resultados de la consulta y los pasaríamos a un Json
@@ -426,7 +425,7 @@ http.createServer((request,response)=>{
             });
             
             //CODIGO AQUÍ
-            let cons = `SELECT * FROM VISITAS WHERE USUARIO_ID = ${jsonData.usr}`;
+            let cons = `SELECT * FROM VISITAS V  JOIN PERSONA P ON (V.USUARIO_ID = P.PERSONA_ID) WHERE USUARIO_ID = ${jsonData.usr}`;
             let ejsFile = './www/ejsFiles/allUsers.ejs';
             let pageHeader = `Historial de visitas del usuario ${jsonData.usr}`;
             db.consult(cons).then(dbInfo => {
@@ -469,7 +468,44 @@ http.createServer((request,response)=>{
             jsonData[key] = value;
             });
             
-            //CODIGO AQUÍ para uno sólo
+
+            db.consult(`select * from empleado e join persona p on (p.persona_id = e.empleado_id) join sucursal using (sucursal_id) where empleado_id = ${jsonData.emp}`).then(dbInfo  => {
+                //tendríamos los resultados de la consulta y los pasaríamos a un Json
+                console.log(jsonData);
+                console.log(dbInfo);
+                let empInfo = { "user_id":jsonData.emp, "username": dbInfo[0].NOMBRE, "birthday": dbInfo[0].CUMPLE, "direction":dbInfo[0].DIRECCION,"status":"active" };
+                console.log(empInfo);
+                let userExists = true;
+                /*Aquí procedemos a en caso de que sí existe, a cargar los datos */                
+                if(userExists){
+                    let ejsFile = './www/ejsFiles/usr_info.ejs';
+                    //console.log(ejsFile)
+                    ejs.renderFile(ejsFile, empInfo, (err, renderedHtml) => {
+                        if (err) {
+                        response.statusCode = 500;
+                        response.end('Error interno del servidor');
+                        return;
+                        }
+                       // response.statusCode = 200;
+                       // response.setHeader('Content-Type', 'text/html');
+                        //response.end(renderedHtml);
+                        response.writeHead(200, {"Content-Type": "text/html"});
+                        response.end(renderedHtml);
+
+
+                        //estaría bueno en welcome.ejs poner un Script que después de un tiempo de q 5 segundos haga
+                        //un request para volver a cargar main_screen.html
+                    });
+                }
+                else{
+                    response.writeHead(302, { 'Location': './user_consult.html' });
+                    response.end();
+                }
+            }).catch(err => {
+                console.error(err);
+                response.writeHead(302, { 'Location': './user_consult.html' });
+                response.end();
+            });
 
             response.writeHead(302, { 'Location': './sudoOptions.html' });
             response.end();
@@ -505,23 +541,8 @@ http.createServer((request,response)=>{
             jsonData[key] = value;
             });
             
-            let dt = new Date();
-            let dtPayment = new Date();
             dtPayment.setMonth(dtPayment.getMonth() + 3);
             let id = genID.getNumericHashFromDate(dt);
-
-            //formateamos para que deje meter la fecha jiji
-            let year = dt.getFullYear();
-            let month = String(dt.getMonth() + 1).padStart(2, "0"); // Agrega ceros a la izquierda si es necesario
-            let day = String(dt.getDate()).padStart(2, "0"); // Agrega ceros a la izquierda si es necesario
-            const formattedDatePayment = `${year}-${month}-${day}`;
-
-            year = dtPayment.getFullYear();
-            month = String(dtPayment.getMonth() + 1).padStart(2, "0"); // Agrega ceros a la izquierda si es necesario
-            day = String(dtPayment.getDate()).padStart(2, "0"); // Agrega ceros a la izquierda si es necesario
-            const formattedDateNext = `${year}-${month}-${day}`;
-
-            console.log(jsonData);
 
             let operations = [];           
             if([11,12,13,14,15].includes(parseInt(jsonData.e_type)) ){
