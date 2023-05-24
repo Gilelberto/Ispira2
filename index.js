@@ -420,6 +420,79 @@ http.createServer((request,response)=>{
             response.end();
         });
     }
+    else if(request.url == "/new_employee" && request.method == "POST"){
+        let data = [];
+        request.on('data', value => {
+            data.push(value);
+        }).on('end', ()=>{
+            let params = Buffer.concat(data).toString();
+            const jsonData = {};
+            params.split('&').forEach(item => {
+            const [key, value] = item.split('=');
+            jsonData[key] = value;
+            });
+            
+            //CODIGO AQUÍ
+
+            response.writeHead(302, { 'Location': './sudoOptions.html' });
+            response.end();
+        });
+    }
+    else if(request.url == "/users_visit_login" && request.method == "POST"){
+        let data = [];
+        request.on('data', value => {
+            data.push(value);
+        }).on('end', ()=>{
+            let params = Buffer.concat(data).toString();
+            const jsonData = {};
+            params.split('&').forEach(item => {
+            const [key, value] = item.split('=');
+            jsonData[key] = value;
+            });
+            
+            //CODIGO AQUÍ
+
+            response.writeHead(302, { 'Location': './sudoOptions.html' });
+            response.end();
+        });
+    }
+    else if(request.url == "/employee_consult_login" && request.method == "POST"){
+        let data = [];
+        request.on('data', value => {
+            data.push(value);
+        }).on('end', ()=>{
+            let params = Buffer.concat(data).toString();
+            const jsonData = {};
+            params.split('&').forEach(item => {
+            const [key, value] = item.split('=');
+            jsonData[key] = value;
+            });
+            
+            //CODIGO AQUÍ para uno sólo
+
+            response.writeHead(302, { 'Location': './sudoOptions.html' });
+            response.end();
+        });
+    }
+    else if(request.url == "/get_all_employees_info" && request.method == "POST"){
+        let data = [];
+        request.on('data', value => {
+            data.push(value);
+        }).on('end', ()=>{
+            let params = Buffer.concat(data).toString();
+            const jsonData = {};
+            params.split('&').forEach(item => {
+            const [key, value] = item.split('=');
+            jsonData[key] = value;
+            });
+            
+            //CODIGO AQUÍ
+
+            response.writeHead(302, { 'Location': './sudoOptions.html' });
+            response.end();
+        });
+    }
+    
     else{chargePage(file,request,response);}
 
     
