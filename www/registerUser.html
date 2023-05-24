@@ -70,8 +70,8 @@
 
                     </select><br/><br/>
                 
-                    <label for="rutina">Tipo de Rutina: </label><br>
-                    <select id="rutina" onchange="actualizarOpcion2()">
+                    <label for="routine">Tipo de Rutina: </label><br>
+                    <select id="routine" onchange="actualizarOpcion2()" name="routine">
                         <option value="11">Pesas</option>
                         <option value="12">Cardio</option>
                         <option value="13">Flexibilidad</option>
@@ -98,7 +98,7 @@
                     <br>
                     <script>
                         function actualizarOpcion2() {
-                        var rutina = document.getElementById("rutina").value;
+                        var rutina = document.getElementById("routine").value;
                         var radios = document.getElementsByName("entrenador");
                         
                         // Habilitar todos los radios
