@@ -477,30 +477,7 @@ http.createServer((request,response)=>{
                 console.log(empInfo);
                 let userExists = true;
                 /*Aquí procedemos a en caso de que sí existe, a cargar los datos */                
-                if(userExists){
-                    let ejsFile = './www/ejsFiles/usr_info.ejs';
-                    //console.log(ejsFile)
-                    ejs.renderFile(ejsFile, empInfo, (err, renderedHtml) => {
-                        if (err) {
-                        response.statusCode = 500;
-                        response.end('Error interno del servidor');
-                        return;
-                        }
-                       // response.statusCode = 200;
-                       // response.setHeader('Content-Type', 'text/html');
-                        //response.end(renderedHtml);
-                        response.writeHead(200, {"Content-Type": "text/html"});
-                        response.end(renderedHtml);
-
-
-                        //estaría bueno en welcome.ejs poner un Script que después de un tiempo de q 5 segundos haga
-                        //un request para volver a cargar main_screen.html
-                    });
-                }
-                else{
-                    response.writeHead(302, { 'Location': './user_consult.html' });
-                    response.end();
-                }
+                
             }).catch(err => {
                 console.error(err);
                 response.writeHead(302, { 'Location': './user_consult.html' });
