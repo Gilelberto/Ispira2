@@ -50,113 +50,121 @@
 
 
             <hr/>
-            <h2>REGISTRO DE USUARIOS</h2>
-            <div id="register_div">
-               <form action="/new_user" method="post">
-                    <label for="name_field"><p>Nombre: </p> </label>
-                    <input type="text" id="name_field" name="name" placeholder="Fulanito Pérez Mangano" required/><br/>
 
-                    <label for="birthday"><p>Fecha de nacimiento:</p></label>
-                    <input type="date" id="birthday" name="birthday" required/><br/>
-
-                    <label for="address"><p>Dirección: </p></label>
-                    <input type="text" id="address" name="address" required/><br/>
-
-                    <label for="suscription"><p>Tipo suscripción: </p></label>
-                    <select name="suscription" id="suscription" required>
-                        <option value="1">Mensual</option>
-                        <option value="2">Trimestral</option>
-                        <option value="3">Anual</option>
-
-                    </select><br/><br/>
-                
-                    <label for="routine">Tipo de Rutina: </label><br>
-                    <select id="routine" onchange="actualizarOpcion2()" name="routine">
-                        <option value="11">Pesas</option>
-                        <option value="12">Cardio</option>
-                        <option value="13">Flexibilidad</option>
-                        <option value="14">Alta Intensidad</option>
-                        <option value="15">Pilates</option>
-                    </select>
-
-                    
-                    <br><br>
-                    
-                    <label>Entrenador Asignado</label>
-                    <br><br>
-                    
-                    <input type="radio" name="entrenador" value="11" disabled> Pesas
-                    <br><br>
-                    <input type="radio" name="entrenador" value="12" disabled> Cardio
-                    <br><br>
-                    <input type="radio" name="entrenador" value="13" disabled> Flexibilidad
-                    <br><br>
-                    <input type="radio" name="entrenador" value="14" disabled> Alta Intensidad
-                    <br><br>
-                    <input type="radio" name="entrenador" value="15" disabled> Pilates
-
-                    <br>
-                    <script>
-                        function actualizarOpcion2() {
-                        var rutina = document.getElementById("routine").value;
-                        var radios = document.getElementsByName("entrenador");
-                        
-                        // Habilitar todos los radios
-                        for (var i = 0; i < radios.length; i++) {
-                            radios[i].disabled = false;
-                        }
-                        
-                        
-                        // Configurar los radios dependiendo de la opción 1 seleccionada
-                        if (rutina === "11") {
-                            radios[0].checked = true;
-                            radios[1].disabled = true;
-                            radios[2].disabled = true;
-                            radios[3].disabled = true;
-                            radios[4].disabled = true;
-
-
-                        } else if (rutina === "12") {
-                            radios[1].checked = true;
-                            radios[0].disabled = true;
-                            radios[2].disabled = true;
-                            radios[3].disabled = true;
-                            radios[4].disabled = true;
-
-                        } else if (rutina === "13") {
-                            radios[2].checked = true;
-                            radios[0].disabled = true;
-                            radios[1].disabled = true;
-                            radios[3].disabled = true;
-                            radios[4].disabled = true;
-
-                        }
-                        else if (rutina === "14") {
-                            radios[3].checked = true;
-                            radios[0].disabled = true;
-                            radios[1].disabled = true;
-                            radios[2].disabled = true;
-                            radios[4].disabled = true;
-
-
-                        }
-                        else if (rutina === "15") {
-                            radios[4].checked = true;
-                            radios[0].disabled = true;
-                            radios[1].disabled = true;
-                            radios[2].disabled = true;
-                            radios[3].disabled = true;
-
-
-                        }
-                        }
-                    </script>
-
-                    <br><br><br>
-
-                    <input type="submit" value="Registrar"/>
-                    </form>
-            </div>
         </div>
+
+        <h2>REGISTRO DE USUARIOS</h2>
+        <div id="register_div">
+           <form action="/new_user" method="post">
+                <label for="name_field"><p>Nombre: </p> </label>
+                <input type="text" id="name_field" name="name" placeholder="Fulanito Pérez Mangano" required/><br/>
+
+                <label for="birthday"><p>Fecha de nacimiento:</p></label>
+                <input type="date" id="birthday" name="birthday" required/><br/>
+
+                <label for="address"><p>Dirección: </p></label>
+                <input type="text" id="address" name="address" required/><br/>
+
+                <label for="suscription"><p>Tipo suscripción: </p></label>
+                <select name="suscription" id="suscription" required>
+                    <option value="1">Mensual</option>
+                    <option value="2">Trimestral</option>
+                    <option value="3">Anual</option>
+
+                </select><br/><br/>
+            
+                <label for="routine">Tipo de Rutina: </label><br>
+                <select id="routine" onchange="actualizarOpcion2()" name="routine">
+                    <option value="11">Pesas</option>
+                    <option value="12">Cardio</option>
+                    <option value="13">Flexibilidad</option>
+                    <option value="14">Alta Intensidad</option>
+                    <option value="15">Pilates</option>
+                </select>
+
+                
+                <br><br>
+                
+                <label>Entrenador Asignado</label>
+                <br><br>
+                
+                <input type="radio" name="entrenador" value="11" disabled> Pesas
+                <br><br>
+                <input type="radio" name="entrenador" value="12" disabled> Cardio
+                <br><br>
+                <input type="radio" name="entrenador" value="13" disabled> Flexibilidad
+                <br><br>
+                <input type="radio" name="entrenador" value="14" disabled> Alta Intensidad
+                <br><br>
+                <input type="radio" name="entrenador" value="15" disabled> Pilates
+
+                <br>
+                <script>
+                    function actualizarOpcion2() {
+                    var rutina = document.getElementById("routine").value;
+                    var radios = document.getElementsByName("entrenador");
+                    
+                    // Habilitar todos los radios
+                    for (var i = 0; i < radios.length; i++) {
+                        radios[i].disabled = false;
+                    }
+                    
+                    
+                    // Configurar los radios dependiendo de la opción 1 seleccionada
+                    if (rutina === "11") {
+                        radios[0].checked = true;
+                        radios[1].disabled = true;
+                        radios[2].disabled = true;
+                        radios[3].disabled = true;
+                        radios[4].disabled = true;
+
+
+                    } else if (rutina === "12") {
+                        radios[1].checked = true;
+                        radios[0].disabled = true;
+                        radios[2].disabled = true;
+                        radios[3].disabled = true;
+                        radios[4].disabled = true;
+
+                    } else if (rutina === "13") {
+                        radios[2].checked = true;
+                        radios[0].disabled = true;
+                        radios[1].disabled = true;
+                        radios[3].disabled = true;
+                        radios[4].disabled = true;
+
+                    }
+                    else if (rutina === "14") {
+                        radios[3].checked = true;
+                        radios[0].disabled = true;
+                        radios[1].disabled = true;
+                        radios[2].disabled = true;
+                        radios[4].disabled = true;
+
+
+                    }
+                    else if (rutina === "15") {
+                        radios[4].checked = true;
+                        radios[0].disabled = true;
+                        radios[1].disabled = true;
+                        radios[2].disabled = true;
+                        radios[3].disabled = true;
+
+
+                    }
+                    }
+                </script>
+
+                <br><br><br>
+
+                <input type="submit" value="Registrar"/>
+                </form>
+        </div>
+
+
+
+
+
+
     </body>
 </html>
