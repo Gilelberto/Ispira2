@@ -16,7 +16,7 @@
                     <a href="main_screen.html"><p>Accesos</p></a>
                 </div>
                 <div class="button">
-                    <a href="user_consult.html"><p>Consultas</p></a>
+                    <a href="user_consult.html"><p>Consultas Usuarios</p></a>
                 </div>
                 <div class="button">
                     <a href="payments.html"><p>Pagos</p></a>
@@ -27,8 +27,30 @@
                 <div class="button">
                     <a href="main_screen.html"><p>SUDO</p></a>
                 </div>
+
             </div>
+
+            <div id="sudoOpt">
+                <div class="button">
+                    <a href="./registerUser.html"><p>Registrar usuario </p></a>
+                </div>
+                <div class="button">
+                    <a href="./users_visit.html"><p>Visitas Usuario</p></a>
+                </div>
+                <div class="button">
+                    <a href="./registerEmployee.html"><p>Registrar Empleado </p></a>
+                </div>
+                <div class="button">
+                    <a href="./employee_consult.html"><p>Consultar empleados</p></a>
+                </div>
+                <div class="button">
+                    <a href="./employees_login.html"><p>Empleados</p></a>
+                </div>
+            </div>
+
+
             <hr/>
+            <h2>REGISTRO DE USUARIOS</h2>
             <div id="register_div">
                <form action="/new_user" method="post">
                     <label for="name_field"><p>Nombre: </p> </label>
@@ -47,31 +69,90 @@
                         <option value="3">Anual</option>
 
                     </select><br/><br/>
+                
+                    <label for="rutina">Tipo de Rutina: </label><br>
+                    <select id="rutina" onchange="actualizarOpcion2()">
+                        <option value="11">Pesas</option>
+                        <option value="12">Cardio</option>
+                        <option value="13">Flexibilidad</option>
+                        <option value="14">Alta Intensidad</option>
+                        <option value="15">Pilates</option>
+                    </select>
 
-                    <label for="rutina"><p>Tipo de rutina: </p></label>
-                    <select name="routine" id="routine" required>
-                        <option value="1">Pesas</option>
-                        <option value="2">Cardio</option>
-                        <option value="3">Flexibilidad</option>
-                        <option value="4">Alta Intensidad</option>
-                        <option value="5">Pilates</option>
+                    
+                    <br><br>
+                    
+                    <label>Entrenador Asignado</label>
+                    <br><br>
+                    
+                    <input type="radio" name="entrenador" value="11" disabled> Pesas
+                    <br><br>
+                    <input type="radio" name="entrenador" value="12" disabled> Cardio
+                    <br><br>
+                    <input type="radio" name="entrenador" value="13" disabled> Flexibilidad
+                    <br><br>
+                    <input type="radio" name="entrenador" value="14" disabled> Alta Intensidad
+                    <br><br>
+                    <input type="radio" name="entrenador" value="15" disabled> Pilates
 
-                    </select><br/><br/>
+                    <br>
+                    <script>
+                        function actualizarOpcion2() {
+                        var rutina = document.getElementById("rutina").value;
+                        var radios = document.getElementsByName("entrenador");
+                        
+                        // Habilitar todos los radios
+                        for (var i = 0; i < radios.length; i++) {
+                            radios[i].disabled = false;
+                        }
+                        
+                        
+                        // Configurar los radios dependiendo de la opción 1 seleccionada
+                        if (rutina === "11") {
+                            radios[0].checked = true;
+                            radios[1].disabled = true;
+                            radios[2].disabled = true;
+                            radios[3].disabled = true;
+                            radios[4].disabled = true;
 
 
-                    <label for="entrenador"><p>Entrenador Asignado: </p></label>
-                    <select name="coach" id="coach" required>
-                        <option value="1">Pesas</option>
-                        <option value="2">Cardio</option>
-                        <option value="3">Flexibilidad</option>
-                        <option value="4">Alta Intensidad</option>
-                        <option value="5">Pilates</option>
+                        } else if (rutina === "12") {
+                            radios[1].checked = true;
+                            radios[0].disabled = true;
+                            radios[2].disabled = true;
+                            radios[3].disabled = true;
+                            radios[4].disabled = true;
 
-                    </select><br/><br/>
+                        } else if (rutina === "13") {
+                            radios[2].checked = true;
+                            radios[0].disabled = true;
+                            radios[1].disabled = true;
+                            radios[3].disabled = true;
+                            radios[4].disabled = true;
+
+                        }
+                        else if (rutina === "14") {
+                            radios[3].checked = true;
+                            radios[0].disabled = true;
+                            radios[1].disabled = true;
+                            radios[2].disabled = true;
+                            radios[4].disabled = true;
 
 
+                        }
+                        else if (rutina === "15") {
+                            radios[4].checked = true;
+                            radios[0].disabled = true;
+                            radios[1].disabled = true;
+                            radios[2].disabled = true;
+                            radios[3].disabled = true;
 
 
+                        }
+                        }
+                    </script>
+
+                    <br><br><br>
 
                     <input type="submit" value="Registrar"/>
                     </form>

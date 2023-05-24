@@ -27,11 +27,29 @@
                     <a href="sudo.html"><p>SUDO</p></a>
                 </div>
             </div>
-            <div id="login_form">
-                <form action="/get_all_users_info" method="post">
+            <div id="sudoOpt">
+                <div class="button">
+                    <a href="./registerUser.html"><p>Registrar usuario </p></a>
+                </div>
+                <div class="button">
+                    <a href="./users_visit.html"><p>Visitas Usuario</p></a>
+                </div>
+                <div class="button">
+                    <a href="./registerEmployee.html"><p>Registrar Empleado </p></a>
+                </div>
+                <div class="button">
+                    <a href="./employee_consult.html"><p>Consultar Empleados</p></a>
+                </div>
+                <div class="button">
+                    <a href="./employees_login.html"><p>Empleados</p></a>
+                </div>
+            </div>
+            <br>
 
+            <div id="login_form">
+                <form action="/get_all_employees_info" method="post">
                     <label for="password_field">Confirmar contraseña: </label>
-                    <input type="password" id="password_field" name="pswrd" placeholder="********"><br/>
+                    <input type="password" id="password_field" name="pswrd" placeholder="********"><br/><br>
                     <input type="submit" value="Continuar"/>
                 </form>
             </div>

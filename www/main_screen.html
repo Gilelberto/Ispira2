@@ -4,6 +4,13 @@
         <meta charset="utf-8"> 
         <link rel="stylesheet" href="./css/main_screen.css"/>
         <link rel="stylesheet" href="./css/global_rules.css"/>
+
+    <script>
+        function mostrarAlerta() {
+            alert("¡Hola! Esta es una alerta en HTML.");
+        }
+        </script>
+    
     </head>
     <body>
         <div id="top">
@@ -15,7 +22,7 @@
                     <a href="main_screen.html"><p>Accesos</p></a>
                 </div>
                 <div class="button">
-                    <a href="user_consult.html"><p>Consultas</p></a>
+                    <a href="user_consult.html"><p>Consultas Usuarios</p></a>
                 </div>
                 <div class="button">
                     <a href="payments.html"><p>Pagos</p></a>
@@ -35,6 +42,10 @@
                     <input type="submit" value="Adelante :)">
                 </form>
             </div>
+
+            <button onclick="mostrarAlerta()">Mostrar alerta</button>
+
+
         </div>
     </body>
 </html>

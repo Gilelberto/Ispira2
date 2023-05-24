@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const ejs = require('ejs');
 const dbDriver = require('./conection');
-const { error, Console } = require('console');
+const { error, Console, Console } = require('console');
 const hash = require('./hash');
 const { type } = require('os');
 var genID = new hash();
@@ -82,6 +82,11 @@ http.createServer((request,response)=>{
                     conti = true;
                     sucursal = '2';
                 }
+                console.log("INICIO")
+                console.log(dbInfo);
+                console.log(jsonData);
+                console.log(user,password,conti);
+                console.log(jsonData.admin_usr,jsonData.pswrd,conti);
                 if(user == jsonData.admin_usr && password == jsonData.pswrd && conti == true){
                     console.log("ENTRA");
                     admin_pass = password;
@@ -173,7 +178,7 @@ http.createServer((request,response)=>{
             const [key, value] = item.split('=');
             jsonData[key] = value;
             });
-            /*AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE*/
+            /AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE/
             db.consult(`select * from persona p join usuario u on (p.persona_id = u.usuario_id) join fechas f using(usuario_id) join rutina r using(rutina_id) join tipo_suscripcion t using(suscripcion_id)
             where usuario_id = ${jsonData.usr}`).then(dbInfo  => {
                 //tendríamos los resultados de la consulta y los pasaríamos a un Json
@@ -264,7 +269,7 @@ http.createServer((request,response)=>{
             const [key, value] = item.split('=');
             jsonData[key] = value;
             });
-            /*AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE*/
+            /AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE/
             let user = jsonData.usr;
             console.log(jsonData);
             //tendríamos los resultados de la consulta y los pasaríamos a un Json

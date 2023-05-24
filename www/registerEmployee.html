@@ -4,6 +4,34 @@
         <meta charset="utf-8"> 
         <link rel="stylesheet" href="./css/registerUser.css"/>
         <link rel="stylesheet" href="./css/global_rules.css">
+        <script>
+            function deshabilitarOtraCasilla() {
+              var coach = document.getElementById("coach");
+
+              var receptionist = document.getElementById("receptionist");
+              var opcionesSection = document.getElementById("coach-section");
+              
+              // Verificar si la casilla 1 está seleccionada
+              if (coach.checked) {
+                // Si la casilla 1 está seleccionada, deshabilitar la casilla 2
+                receptionist.disabled = true;
+                opcionesSection.style.display = "block";
+              } else {
+                // Si la casilla 1 no está seleccionada, habilitar la casilla 2
+                receptionist.disabled = false;
+                opcionesSection.style.display = "none";
+              }
+        
+              // Verificar si la casilla 2 está seleccionada
+              if (receptionist.checked) {
+                // Si la casilla 2 está seleccionada, deshabilitar la casilla 1
+                coach.disabled = true;
+              } else {
+                // Si la casilla 2 no está seleccionada, habilitar la casilla 1
+                coach.disabled = false;
+              }
+            }
+          </script>
     </head>
     <body>
         <div id="top">
@@ -16,7 +44,7 @@
                     <a href="main_screen.html"><p>Accesos</p></a>
                 </div>
                 <div class="button">
-                    <a href="user_consult.html"><p>Consultas</p></a>
+                    <a href="user_consult.html"><p>Consultas Usuarios</p></a>
                 </div>
                 <div class="button">
                     <a href="payments.html"><p>Pagos</p></a>
@@ -28,7 +56,27 @@
                     <a href="main_screen.html"><p>SUDO</p></a>
                 </div>
             </div>
+
+            <div id="sudoOpt">
+              <div class="button">
+                  <a href="./registerUser.html"><p>Registrar usuario </p></a>
+              </div>
+              <div class="button">
+                  <a href="./users_visit.html"><p>Visitas Usuario</p></a>
+              </div>
+              <div class="button">
+                  <a href="./registerEmployee.html"><p>Registrar Empleado </p></a>
+              </div>
+              <div class="button">
+                  <a href="./employee_consult.html"><p>Consultar empleados</p></a>
+              </div>
+              <div class="button">
+                <a href="./employees_login.html"><p>Empleados</p></a>
+            </div>
+          </div>
+
             <hr/>
+            <h2>REGISTRO DE EMPLEADOS</h2>
             <div id="register_div">
                <form action="/new_employee" method="post">
                     <label for="name_field"><p>Nombre: </p> </label>
@@ -40,36 +88,72 @@
                     <label for="address"><p>Dirección: </p></label>
                     <input type="text" id="address" name="address" required/><br/>
 
+                    <label for="branch"><p>Sucursal </p></label>
+                    <select name="branch" id="branch" required>
+                        <option value="1">Parral</option>
+                        <option value="2">Juarez</option>
+                        <option value="3">Chihuahua</option>
+                    </select><br/><br/>
+
                     <label for="salary"><p>Sueldo </p></label>
-                    <input type="number" id="salary" name="salary" placeholder="1000"required/><br/>
+                    <input type="text" id="salary" name="salary" placeholder="1000"required/><br/>
+
+                    <label for="schedule"><p>Horario </p></label>
+                    <input type="text" id="schedule" name="schedule" placeholder="8:00am-4:00pm"required/><br/>
 
 
+                    <label for="tipo"><p>Tipo de empleado</p></label>
+                    <label for="coach">
+                        <input type="checkbox" id="coach" onclick="deshabilitarOtraCasilla()"> entrenador
+                      </label>
                     
+                      <div id="coach-section" >
+                        <p>Tipo de entrenador</p>
+                        <label for="pilates">
+                          <input type="radio" name="opciones" id="pilates" value="15"> Pilates
+                        </label>
+                    
+                        <label for="pesas">
+                          <input type="radio" name="opciones" id="pesas" value="11"> Pesas
+                        </label>
+                    
+                        <label for="cardio">
+                          <input type="radio" name="opciones" id="cardio" value="12"> Cardio
+                        </label>
+
+                        <label for="flexibilidad">
+                            <input type="radio" name="opciones" id="flexibilidad" value="13"> Flexibilidad
+                          </label>
+
+                          <label for="altaintensidad">
+                            <input type="radio" name="opciones" id="altaintensidad" value="14"> Alta Intensidad
+                          </label>
+                      </div>
+                    
+                      <br>
+                    
+                
+                  <label for="receptionist">
+                    <input type="checkbox" id="receptionist" onclick="deshabilitarOtraCasilla()"> Recepcionista
+                  </label>
 
 
+                  <label for="rest"><p>Descanso </p></label>
+                  <select name="rest" id="rest" required>
+                      <option value="1">Lunes</option>
+                      <option value="2">Martes</option>
+                      <option value="3">Miercoles</option>
+                      <option value="3">Jueves</option>
+                      <option value="3">Viernes</option>
+                      <option value="3">Sabado</option>
+                      <option value="3">Domingo</option>
 
-                    <label for="rutina"><p>Tipo de rutina: </p></label>
-                    <select name="routine" id="routine" required>
-                        <option value="1">Pesas</option>
-                        <option value="2">Cardio</option>
-                        <option value="3">Flexibilidad</option>
-                        <option value="4">Alta Intensidad</option>
-                        <option value="5">Pilates</option>
-
-                    </select><br/><br/>
-
-
-                    <label for="entrenador"><p>Entrenador Asignado: </p></label>
-                    <select name="coach" id="coach" required>
-                        <option value="1">Pesas</option>
-                        <option value="2">Cardio</option>
-                        <option value="3">Flexibilidad</option>
-                        <option value="4">Alta Intensidad</option>
-                        <option value="5">Pilates</option>
-
-                    </select><br/><br/>
+                  </select><br/><br/>
 
 
+                    <br><br>
+                    
+                      
 
 
 
