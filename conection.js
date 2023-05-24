@@ -69,6 +69,55 @@ class DBManager{
           console.error(err);
         }
       }
+    
+      async executeMany(cons, bindParams) {
+        let con;
+        try {
+          con = await oracledb.getConnection({
+            user: "ISPIRA",
+            password: "ispira",
+            connectString: "localhost:1521/xepdb1"
+          });
+
+          const result = await con.executeMany(
+            cons,
+            bindParams,
+            { autoCommit: true } // Configura el autoCommit en true para realizar la ejecución
+          );
+      
+          console.log("Operación exitosa");
+          return result;
+        } catch (err) {
+          console.log("*********************************");
+          //console.log(cons);
+          console.error(err);
+          console.log("*********************************");
+        }
+      }
+
+      async executeBatch(operations) { //recibe un arreglo de consultas nomás
+        let con;
+        try {
+          con = await oracledb.getConnection({
+            user: "ISPIRA",
+            password: "ispira",
+            connectString: "localhost:1521/xepdb1"
+          });
+      
+          for (const operation of operations) {
+            await con.execute(operation);
+            await con.commit();
+            console.log("=============INSERTA=============");
+          }
+      
+          return operations;
+        } catch (err) {
+          console.log("*********************************");
+          console.log(operations);
+          console.error(err);
+          console.log("*********************************");
+        }
+      }
 }
 
     
