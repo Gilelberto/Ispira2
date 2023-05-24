@@ -226,6 +226,7 @@ http.createServer((request,response)=>{
             
             if(admin_pass == jsonData.pswrd){
                 let ejsFile = './www/ejsFiles/allUsers.ejs';
+                let pageHeader = `Información completa de todos los usuarios`;
                 db.consult(`select * from persona p join usuario u on (p.persona_id = u.usuario_id) join fechas f using(usuario_id) join rutina r using(rutina_id) join tipo_suscripcion t using(suscripcion_id)`).then(dbInfo =>{
                     //CARGAR LA INFO DE LA CONSULTA Y RENDERIZAR
                     let formatedInfo = [];
@@ -235,7 +236,7 @@ http.createServer((request,response)=>{
                         formatedInfo.push("<p>"+register+"<p/>");
                     }
                     formatedInfo = formatedInfo.join("<hr/>");
-                    ejs.renderFile(ejsFile, {"info":formatedInfo}, (err, renderedHtml) => {
+                    ejs.renderFile(ejsFile, {"info":formatedInfo, "title":pageHeader}, (err, renderedHtml) => {
                         if (err) {
                         response.statusCode = 500;
                         response.end('Error interno del servidor');
@@ -341,7 +342,7 @@ http.createServer((request,response)=>{
     }
     else if(request.url == "/sudo" && request.method == "POST"){
         //tenemos que sacar la contraseña de la base de batos
-        let password = "ispira";
+        //let password = "ispira";
         let data = [];
         request.on('data', value => {
             data.push(value);
@@ -353,7 +354,7 @@ http.createServer((request,response)=>{
             jsonData[key] = value;
             });
             
-            if(jsonData.pswrd == password){
+            if(jsonData.pswrd == admin_pass){
                 //cargar las opciones donde se mete gente
                 response.writeHead(302, { 'Location': './sudoOptions.html' });
                 response.end();
@@ -410,45 +411,6 @@ http.createServer((request,response)=>{
                 response.writeHead(302, { 'Location': './sudoOptions.html' });
                 response.end();
             });
-
-            /*
-            db.insert(consPer,bindParams).then(result => {
-                response.writeHead(302, { 'Location': './sudoOptions.html' });
-                response.end();
-            }).catch(
-                error => {console.log(error);
-                response.writeHead(302, { 'Location': './sudoOptions.html' });
-                response.end();
-            });*/
-        });
-    }
-    else if(request.url == '/save' && request.method == "POST"){
-        //console.log("ENTRA");
-        let data = [];
-        request.on('data', value => {
-            data.push(value);
-        }).on('end', ()=>{
-            //console.log(data);
-            let params = Buffer.concat(data).toString();
-            //console.log(params);
-
-            const jsonData = {};
-            params.split('&').forEach(item => {
-            const [key, value] = item.split('=');
-            jsonData[key] = value;
-            });
-            fs.appendFile('./WWW/customers/customers.info', JSON.stringify(jsonData) + '\n', (error) => {
-                if (error) {
-                  response.writeHead(500, { 'Content-Type': 'text/plain' });
-                  response.write('Error al guardar el formulario');
-                  response.end();
-                } else {
-                    response.writeHead(302, { 'Location': './formulario.html' });
-                    response.end();
-                }
-              });
-            //console.log(params);
-            //response.write(params);
         });
     }
     else if(request.url == "/users_visit_login" && request.method == "POST"){
@@ -464,9 +426,35 @@ http.createServer((request,response)=>{
             });
             
             //CODIGO AQUÍ
+            let cons = `SELECT * FROM VISITAS WHERE USUARIO_ID = ${jsonData.usr}`;
+            let ejsFile = './www/ejsFiles/allUsers.ejs';
+            let pageHeader = `Historial de visitas del usuario ${jsonData.usr}`;
+            db.consult(cons).then(dbInfo => {
+                //CARGAR LA INFO DE LA CONSULTA Y RENDERIZAR
+                let formatedInfo = [];
+                for(let i = 0; i < dbInfo.length ; i++){
+                    let register = JSON.stringify(dbInfo[i]);
+                    //console.log(dbInfo[i]);
+                    formatedInfo.push("<p>"+register+"<p/>");
+                }
+                formatedInfo = formatedInfo.join("<hr/>");
+                ejs.renderFile(ejsFile, {"info":formatedInfo, "title": pageHeader}, (err, renderedHtml) => {
+                    if (err) {
+                    response.statusCode = 500;
+                    response.end('Error interno del servidor');
+                    return;
+                    }
+                    response.statusCode = 200;
+                    response.setHeader('Content-Type', 'text/html');
+                    response.end(renderedHtml);
+                });
+            }).catch(error =>{
+                console.log(error);
+                response.writeHead(302, { 'Location': './sudoOptions.html' });
+                response.end();
+            });
 
-            response.writeHead(302, { 'Location': './sudoOptions.html' });
-            response.end();
+
         });
     }
     else if(request.url == "/employee_consult_login" && request.method == "POST"){
@@ -503,6 +491,70 @@ http.createServer((request,response)=>{
 
             response.writeHead(302, { 'Location': './sudoOptions.html' });
             response.end();
+        });
+    }
+    else if(request.url == "/new_employee" && request.method == "POST"){
+        let data = [];
+        request.on('data', value => {
+            data.push(value);
+        }).on('end', ()=>{
+            let params = Buffer.concat(data).toString();
+            const jsonData = {};
+            params.split('&').forEach(item => {
+            const [key, value] = item.split('=');
+            jsonData[key] = value;
+            });
+            
+            let dt = new Date();
+            let dtPayment = new Date();
+            dtPayment.setMonth(dtPayment.getMonth() + 3);
+            let id = genID.getNumericHashFromDate(dt);
+
+            //formateamos para que deje meter la fecha jiji
+            let year = dt.getFullYear();
+            let month = String(dt.getMonth() + 1).padStart(2, "0"); // Agrega ceros a la izquierda si es necesario
+            let day = String(dt.getDate()).padStart(2, "0"); // Agrega ceros a la izquierda si es necesario
+            const formattedDatePayment = `${year}-${month}-${day}`;
+
+            year = dtPayment.getFullYear();
+            month = String(dtPayment.getMonth() + 1).padStart(2, "0"); // Agrega ceros a la izquierda si es necesario
+            day = String(dtPayment.getDate()).padStart(2, "0"); // Agrega ceros a la izquierda si es necesario
+            const formattedDateNext = `${year}-${month}-${day}`;
+
+            console.log(jsonData);
+
+            let operations = [];           
+            if([11,12,13,14,15].includes(parseInt(jsonData.e_type)) ){
+                operations = [
+                    `INSERT INTO Persona VALUES (${id}, '${jsonData.name}', TO_DATE('${jsonData.birthday}', 'YYYY-MM-DD'), '${jsonData.address}', 'Activo')`,
+                    `INSERT INTO EMPLEADO VALUES (${id}, ${jsonData.branch}, ${jsonData.salary}, '${jsonData.schedule}', '${jsonData.rest}')`,
+                    `INSERT INTO ENTRENADOR VALUES (${id}, ${jsonData.e_type})`
+                  ];
+            }
+            else if(jsonData.e_type == 627){ //es recepcionista
+                operations = [
+                    `INSERT INTO Persona VALUES (${id}, '${jsonData.name}', TO_DATE('${jsonData.birthday}', 'YYYY-MM-DD'), '${jsonData.address}', 'Activo')`,
+                    `INSERT INTO EMPLEADO VALUES (${id}, ${jsonData.branch}, ${jsonData.salary}, '${jsonData.schedule}', '${jsonData.rest}')`,
+                    `INSERT INTO RECEPCIONISTA VALUES (${id})`
+                  ];
+            }
+            console.log(operations);
+            if(operations != []){
+                db.executeBatch(operations).then(res=>{
+                    //console.log(bindParams);
+                    response.writeHead(302, { 'Location': './sudoOptions.html' });
+                    response.end();
+                }).catch(err => {
+                    console.log(err);
+                    response.writeHead(302, { 'Location': './sudoOptions.html' });
+                    response.end();
+                });
+            }
+            else{
+                response.writeHead(302, { 'Location': './sudoOptions.html' });
+                response.end();
+            }
+            
         });
     }
     
