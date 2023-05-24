@@ -473,19 +473,33 @@ http.createServer((request,response)=>{
                 //tendríamos los resultados de la consulta y los pasaríamos a un Json
                 console.log(jsonData);
                 console.log(dbInfo);
-                let empInfo = { "user_id":jsonData.emp, "username": dbInfo[0].NOMBRE, "birthday": dbInfo[0].CUMPLE, "direction":dbInfo[0].DIRECCION,"status":"active" };
+                let empInfo = { 
+                    "employee_id": dbInfo[0].EMPLEADO_ID,
+                    "employee_name": dbInfo[0].NOMBRE,
+                    "birthday": dbInfo[0].CUMPLE,
+                    "direction": dbInfo[0].DIRECCION,
+                    "nombre_1": dbInfo[0].NOMBRE_1,
+                    "schedule": dbInfo[0].HORARIO,
+                    "rest": dbInfo[0].DESCANSO,
+                    "status": dbInfo[0].ESTATUS
+                 };
+                 let page = './www/ejsFiles/emp_info.ejs';
                 console.log(empInfo);
-                let userExists = true;
-                /*Aquí procedemos a en caso de que sí existe, a cargar los datos */                
-                
+                ejs.renderFile(page,empInfo,(err,content)=>{
+                    if (err) {
+                        response.statusCode = 500;
+                        response.end('Error interno del servidor');
+                        return;
+                        }
+                        response.statusCode = 200;
+                        response.setHeader('Content-Type', 'text/html');
+                        response.end(content);
+                });             
             }).catch(err => {
                 console.error(err);
                 response.writeHead(302, { 'Location': './user_consult.html' });
                 response.end();
             });
-
-            response.writeHead(302, { 'Location': './sudoOptions.html' });
-            response.end();
         });
     }
     else if(request.url == "/get_all_employees_info" && request.method == "POST"){
@@ -517,8 +531,8 @@ http.createServer((request,response)=>{
             const [key, value] = item.split('=');
             jsonData[key] = value;
             });
-            
-            dtPayment.setMonth(dtPayment.getMonth() + 3);
+
+            let dt = new Date();
             let id = genID.getNumericHashFromDate(dt);
 
             let operations = [];           
