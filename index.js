@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const ejs = require('ejs');
 const dbDriver = require('./conection');
-const { error } = require('console');
+const { error, Console } = require('console');
 const hash = require('./hash');
 const { type } = require('os');
 var genID = new hash();
@@ -67,21 +67,28 @@ http.createServer((request,response)=>{
             db.consult('select * from administrador').then(dbInfo =>{
                 let conti = false;
                 let user;
-                let password;
+                var password;
+                console.log(dbInfo[0].CLAVE);
                 if(jsonData.sucursal == '01'){
                     user = dbInfo[0].ADMIN_ID;
-                    password = dbInfo[0].CONTRASEÑA;
+                    password = dbInfo[0].CLAVE;
+                    console.log("CONTRASEÑA: ",dbInfo[0].CLAVE);
                     conti = true;
                     sucursal = '1';
                 }
                 else if(jsonData.sucursal == '02'){
                     user = dbInfo[1].ADMIN_ID;
-                    password = dbInfo[1].CONTRASEÑA;
+                    password = dbInfo[1].CLAVE;
                     conti = true;
                     sucursal = '2';
                 }
+                console.log("INICIO")
+                console.log(dbInfo);
+                console.log(jsonData);
+                console.log(user,password,conti);
+                console.log(jsonData.admin_usr,jsonData.pswrd,conti);
                 if(user == jsonData.admin_usr && password == jsonData.pswrd && conti == true){
-
+                    console.log("ENTRA");
                     admin_pass = password;
                     response.writeHead(302, { 'Location': './main_screen.html' });
                     response.end();
@@ -171,11 +178,11 @@ http.createServer((request,response)=>{
             const [key, value] = item.split('=');
             jsonData[key] = value;
             });
-            /*AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE*/
+            /AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE/
             db.consult(`select * from persona p join usuario u on (p.persona_id = u.usuario_id) join fechas f using(usuario_id) join rutina r using(rutina_id) join tipo_suscripcion t using(suscripcion_id)
             where usuario_id = ${jsonData.usr}`).then(dbInfo  => {
                 //tendríamos los resultados de la consulta y los pasaríamos a un Json
-                let userInfo = { "user_id":jsonData.user, "username": dbInfo[0].NOMBRE, "birthday": dbInfo[0].CUMPLEAÑOS, "direction":dbInfo[0].DIRECCION,"status":"active" };
+                let userInfo = { "user_id":jsonData.user, "username": dbInfo[0].NOMBRE, "birthday": dbInfo[0].CUMPLE, "direction":dbInfo[0].DIRECCION,"status":"active" };
                 let userExists = true;
                 /*Aquí procedemos a en caso de que sí existe, a cargar los datos */                
                 if(userExists){
@@ -262,7 +269,7 @@ http.createServer((request,response)=>{
             const [key, value] = item.split('=');
             jsonData[key] = value;
             });
-            /*AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE*/
+            /AQUÍ HAY QUE USAR UNA CONSULTA PARA VERIFICAR QUE EL USUARIO EXISTE MIENTRAS HARDCODE/
             let user = jsonData.usr;
             console.log(jsonData);
             //tendríamos los resultados de la consulta y los pasaríamos a un Json
@@ -296,26 +303,26 @@ http.createServer((request,response)=>{
             jsonData[key] = value;
             });     
             if(jsonData.pswd == admin_pass){
-                db.consult(`select * from usuario u join fechas f using(usuario_id) join tipo_suscripcion using (suscripcion_id) where usuario_id = ${jsonData.usr}`).then(dbInfo  => {
+                db.consult(`select * from usuario u join fechas f using(usuario_id) join tipo_suscripcion using (suscripcion_id) where usuario_id = ${jsonData.usr_id}`).then(dbInfo  => {
                     
-                    let dt = new Date();
+                    let dtOld = new Date();
+                    let dt = new Date()
 
                     //ALTER FECHAS EN FECHAS
-                    console.log("====================");
+                    /*console.log("====================");
                     console.log(dbInfo);
-                    console.log("====================");
-                    let payment = dt;
+                    console.log("====================");*/
+                    let payment = dtOld;
                     dt.setMonth(dt.getMonth() + dbInfo[0].CANTIDAD); 
                     let paymentInsert = `update fechas set fecha_pago=:payment,fecha_corte=:newPayment
                     where usuario_id= ${jsonData.usr_id}`;
                     let paymentValues = {"payment":payment,"newPayment":dt};
                     db.insert(paymentInsert,paymentValues);
-
-                    console.log("USUARIO");
                     //ALTER EN USUARIO
-                    let userCons = `update usuario set suscripcion_id= :sus where usuario_id= ${jsonData.usr_id}`;
-                    let userValue = {"sus":jsonData.SUS};
+                    let userCons = `update usuario set suscripcion_id = :newSus where usuario_id = ${jsonData.usr_id}`;
+                    let userValue = {"newSus":jsonData.sus};
                     db.insert(userCons,userValue);
+
                     response.writeHead(302, { 'Location': './payments.html' });
                     response.end();
 
@@ -370,6 +377,11 @@ http.createServer((request,response)=>{
             jsonData[key] = value;
             });
             
+
+            //PERSONA
+            //ID, NOMBRE, CUMPLEAÑOS, DIRECCION, STATUS
+ 
+
             //tratamos los datos y luego ya insertamos
            
             /*

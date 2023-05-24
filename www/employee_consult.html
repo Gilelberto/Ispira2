@@ -2,7 +2,7 @@
 <html> 
     <head>
         <meta charset="utf-8"> 
-        <link rel="stylesheet" href="./css/sudoOptions.css"/>
+        <link rel="stylesheet" href="./css/user_consult.css"/>
         <link rel="stylesheet" href="./css/global_rules.css">
     </head>
     <body>
@@ -10,13 +10,12 @@
             <img id="logo" src="./resources/img/logo.png" alt="logo">
         </div>
         <div id="main_div">
-            <h1>PÁGINA PARA METERLE OPCIONES EXTRAS DE ADMINISTRACIÓN</h1>
             <div id="options">
                 <div class="button">
                     <a href="main_screen.html"><p>Accesos</p></a>
                 </div>
                 <div class="button">
-                    <a href="user_consult.html"><p>Consultas Usuarios</p></a>
+                    <a href="user_consult.html"><p>Consulta Usuarios</p></a>
                 </div>
                 <div class="button">
                     <a href="payments.html"><p>Pagos</p></a>
@@ -25,7 +24,7 @@
                     <a href="users_login.html"><p>Usuarios</p></a>
                 </div>
                 <div class="button">
-                    <a href="main_screen.html"><p>SUDO</p></a>
+                    <a href="sudo.html"><p>SUDO</p></a>
                 </div>
             </div>
             <div id="sudoOpt">
@@ -44,7 +43,15 @@
                 <div class="button">
                     <a href="./employees_login.html"><p>Empleados</p></a>
                 </div>
+            </div>
+            <h2>CONSULTAR EMPLEADO</h2>
+            <div id="employeeConsult">
+                <form action="/employee_consult_login" method="post">
+                    <label for="employee_field">Id empleado: </label>
+                    <input type="text" id="employee_field" name="emp" placeholder="####"/><br/><br>
 
+                    <input type="submit" value="Consultar :)"/>
+                </form>
             </div>
         </div>
     </body>
