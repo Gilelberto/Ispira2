@@ -334,7 +334,7 @@ http.createServer((request,response)=>{
                     let userValue = {"newSus":jsonData.sus};
                     db.insert(userCons,userValue);
 
-                    response.writeHead(302, { 'Location': './confirmacion.html' });
+                    response.writeHead(302, { 'Location': './confirmacionpagos.html' });
                     response.end();
 
                     
