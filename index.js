@@ -334,7 +334,7 @@ http.createServer((request,response)=>{
                     let userValue = {"newSus":jsonData.sus};
                     db.insert(userCons,userValue);
 
-                    response.writeHead(302, { 'Location': './payments.html' });
+                    response.writeHead(302, { 'Location': './confirmacion.html' });
                     response.end();
 
                     
@@ -414,7 +414,7 @@ http.createServer((request,response)=>{
             console.log(operations);
             db.executeBatch(operations).then(res=>{
                 //console.log(bindParams);
-                response.writeHead(302, { 'Location': './sudoOptions.html' });
+                response.writeHead(302, { 'Location': './confirmacion.html' });
                 response.end();
             }).catch(err => {
                 console.log(err);
@@ -608,7 +608,7 @@ http.createServer((request,response)=>{
             if(operations != []){
                 db.executeBatch(operations).then(res=>{
                     //console.log(bindParams);
-                    response.writeHead(302, { 'Location': './sudoOptions.html' });
+                    response.writeHead(302, { 'Location': './confirmacion.html' });
                     response.end();
                 }).catch(err => {
                     console.log(err);
