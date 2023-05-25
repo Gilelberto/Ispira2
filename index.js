@@ -230,9 +230,20 @@ http.createServer((request,response)=>{
                     //CARGAR LA INFO DE LA CONSULTA Y RENDERIZAR
                     let formatedInfo = [];
                     for(let i = 0; i < dbInfo.length ; i++){
-                        let register = JSON.stringify(dbInfo[i]);
                         //console.log(dbInfo[i]);
-                        formatedInfo.push("<p>"+register+"<p/>");
+                        let htmlBlock = `
+                        <div>
+                            <h3>Usuario: ${dbInfo[i].USUARIO_ID}</h3>
+                            <div>
+                                <h3>Información del socio:</h3>
+                                <ul>
+                                    <li><p> Nombre: ${dbInfo[i].NOMBRE} Cumpleaños: ${dbInfo[i].CUMPLE}  Dirección: ${dbInfo[i].DIRECCION}</p></li>
+                                    <li><p>Tipo de suscripcion: ${dbInfo[i].NOMBRE_1} Fecha pago: ${dbInfo[i].FECHA_PAGO} Fecha corte: ${dbInfo[i].FECHA_CORTE} Rutina: ${dbInfo[i].TIPO_RUTINA} EntrenadorId: ${dbInfo[i].ENTRENADOR_ID}</p></li>
+                                </ul>
+                            </div>
+                        </div>
+                        `;
+                        formatedInfo.push(htmlBlock);
                     }
                     formatedInfo = formatedInfo.join("<hr/>");
                     ejs.renderFile(ejsFile, {"info":formatedInfo, "title":pageHeader}, (err, renderedHtml) => {
@@ -425,16 +436,25 @@ http.createServer((request,response)=>{
             });
             
             //CODIGO AQUÍ
-            let cons = `SELECT * FROM VISITAS V  JOIN PERSONA P ON (V.USUARIO_ID = P.PERSONA_ID) WHERE USUARIO_ID = ${jsonData.usr}`;
+            let cons = `SELECT * FROM VISITAS V  JOIN PERSONA P ON (V.USUARIO_ID = P.PERSONA_ID) join sucursal using (sucursal_id) WHERE USUARIO_ID = ${jsonData.usr}`;
             let ejsFile = './www/ejsFiles/allUsers.ejs';
             let pageHeader = `Historial de visitas del usuario ${jsonData.usr}`;
             db.consult(cons).then(dbInfo => {
                 //CARGAR LA INFO DE LA CONSULTA Y RENDERIZAR
                 let formatedInfo = [];
                 for(let i = 0; i < dbInfo.length ; i++){
-                    let register = JSON.stringify(dbInfo[i]);
-                    //console.log(dbInfo[i]);
-                    formatedInfo.push("<p>"+register+"<p/>");
+                    let htmlBlock =`
+                    <div id="content">
+                    <div id="info_div">
+                        <h3>Información de Visita ${dbInfo[i].VISITA_ID}:</h3>
+                        <ul>
+                            <li><p> Nombre ${dbInfo[i].NOMBRE} Fecha de visita  ${dbInfo[i].FECHA_VISITA}  Sucursal: ${dbInfo[i].NOMBRE_1}</p></li>
+        
+                        </ul>
+                    </div>
+                </div>
+                    `
+                    formatedInfo.push(htmlBlock);
                 }
                 formatedInfo = formatedInfo.join("<hr/>");
                 ejs.renderFile(ejsFile, {"info":formatedInfo, "title": pageHeader}, (err, renderedHtml) => {
@@ -514,10 +534,44 @@ http.createServer((request,response)=>{
             jsonData[key] = value;
             });
             
-            //CODIGO AQUÍ
-
-            response.writeHead(302, { 'Location': './sudoOptions.html' });
-            response.end();
+            //CODIGO 
+            let ejsFile = './www/ejsFiles/allUsers.ejs';
+            let pageHeader = `Información completa de todos los empleados`;
+            db.consult(`select * from empleado e join persona p on (p.persona_id = e.empleado_id) join sucursal using (sucursal_id)`).then(dbInfo =>{
+                //CARGAR LA INFO DE LA CONSULTA Y RENDERIZAR
+                let formatedInfo = [];
+                for(let i = 0; i < dbInfo.length ; i++){
+                    let htmlBlock = `
+                    <div>
+                        <h3>Empleado: ${dbInfo[i].PERSONA_ID}</h3>
+                        <div>
+                            <h3>Información del empleado:</h3>
+                            <Ol>
+                                <li><p> Nombre ${dbInfo[i].NOMBRE} Cumpleaños: ${dbInfo[i].CUMPLE}  Dirección: ${dbInfo[i].DIRECCION}</p></li>
+                                <li><p>Estatus: ${dbInfo[i].ESTATUS} Sucursal:${dbInfo[i].NOMBRE_1} Horario:${dbInfo[i].HORARIO} Sueldo: ${dbInfo[i].SUELDO} Descanso: ${dbInfo[i].DESCANSO} </p></li>
+                            </Ol>
+                        </div>
+                    </div>
+                        `;
+                        formatedInfo.push(htmlBlock);
+                }
+                formatedInfo = formatedInfo.join("<hr/>");
+                ejs.renderFile(ejsFile, {"info":formatedInfo, "title":pageHeader}, (err, renderedHtml) => {
+                    if (err) {
+                    response.statusCode = 500;
+                    response.end('Error interno del servidor');
+                    return;
+                    }
+                    response.statusCode = 200;
+                    response.setHeader('Content-Type', 'text/html');
+                    response.end(renderedHtml);
+                });
+            }).catch(err => {
+                console.error(err);
+                response.writeHead({"Content-Type":"text/plain"});
+                response.write("Error en la consulta");
+                response.end()
+            });
         });
     }
     else if(request.url == "/new_employee" && request.method == "POST"){
